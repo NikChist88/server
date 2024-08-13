@@ -1,5 +1,13 @@
 import { UsersService } from './users.service'
-import { Controller, Get, HttpCode, HttpStatus, Param } from '@nestjs/common'
+import {
+  ClassSerializerInterceptor,
+  Controller,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Param,
+  UseInterceptors,
+} from '@nestjs/common'
 
 @Controller('users')
 export class UsersController {
@@ -7,7 +15,15 @@ export class UsersController {
 
   @Get(':id')
   @HttpCode(HttpStatus.OK)
-  findById(@Param('id') id: string) {
-    return this.usersService.findById(id)
+  @UseInterceptors(ClassSerializerInterceptor)
+  async findById(@Param('id') id: string) {
+    return await this.usersService.findById(id)
+  }
+
+  @Get()
+  @HttpCode(HttpStatus.OK)
+  @UseInterceptors(ClassSerializerInterceptor)
+  async findAll() {
+    return await this.usersService.findAll()
   }
 }

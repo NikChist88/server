@@ -1,15 +1,19 @@
-import { UserEntity } from 'src/users/entities/user.entity'
+import { CartEntity } from 'src/cart/entities/cart.entity'
+import { CategoryEntity } from 'src/categories/entities/category.entity'
+import { ReviewEntity } from 'src/reviews/entities/review.entity'
 import {
   Column,
   CreateDateColumn,
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
+  Timestamp,
   UpdateDateColumn,
 } from 'typeorm'
 
-enum ProductSizes {
+export enum Sizes {
   XS = 'extra-small',
   S = 'small',
   M = 'middle',
@@ -18,10 +22,31 @@ enum ProductSizes {
   XXL = 'extra-extra-large',
 }
 
-@Entity({ database: 'euphoria_shop' })
+export enum Colors {
+  'purple',
+  'black',
+  'red',
+  'orange',
+  'navy',
+  'white',
+  'broom',
+  'green',
+  'yellow',
+  'grey',
+  'pink',
+  'blue',
+}
+
+@Entity({ database: 'euphoria_shop', name: 'products' })
 export class ProductEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string
+
+  @CreateDateColumn({ name: 'created_at' })
+  createdAt: Timestamp
+
+  @UpdateDateColumn({ name: 'updated_at' })
+  updatedAt: Timestamp
 
   @Column()
   title: string
@@ -29,37 +54,38 @@ export class ProductEntity {
   @Column('text')
   description: string
 
-  @Column()
-  category: string
-
-  @Column()
-  image: string
+  @Column({ type: 'simple-array' })
+  images?: string[]
 
   @Column('int')
   rating: number
 
-  @Column('int')
-  new_price: number
+  @Column('int', { name: 'new_price' })
+  newPrice: number
 
-  @Column('int')
-  old_price: number
+  @Column('int', { name: 'old_price' })
+  oldPrice: number
 
-  @Column({ type: 'enum', enum: ProductSizes, default: ProductSizes.XS })
-  sizes: ProductSizes
+  @Column({ type: 'enum', enum: Sizes, default: Sizes.XS })
+  sizes: Sizes
 
-  @Column('simple-array')
-  colors: string[]
+  @Column({ type: 'enum', enum: Colors })
+  color: Colors
 
-  @Column({ default: false })
-  favorite: boolean
+  @Column({ name: 'cart_id' })
+  cartId: string
 
-  @CreateDateColumn()
-  createdAt: Date
+  @Column({ name: 'category_id' })
+  categoryId: string
 
-  @UpdateDateColumn()
-  updatedAt: Date
+  @ManyToOne(() => CartEntity, (cart) => cart.products)
+  @JoinColumn({ name: 'cart_id' })
+  cart: CartEntity
 
-  @ManyToOne((type) => UserEntity, (user) => user.products)
-  @JoinColumn({ name: 'userId' })
-  user: UserEntity
+  @ManyToOne(() => CategoryEntity, (category) => category.products)
+  @JoinColumn({ name: 'category_id' })
+  category: CategoryEntity
+
+  @OneToMany(() => ReviewEntity, (review) => review.product)
+  reviews: ReviewEntity[]
 }

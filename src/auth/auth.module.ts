@@ -6,9 +6,13 @@ import { ConfigModule, ConfigService } from '@nestjs/config'
 import { getJwtConfig } from 'src/configs'
 import { UsersModule } from 'src/users/users.module'
 import { CookieService } from './cookie.service'
+import { GoogleStrategy, JwtStrategy } from './strategies'
+import { UsersService } from 'src/users/users.service'
+import { SessionSerializer } from './auth.serializer'
 
 @Module({
   imports: [
+    ConfigModule,
     JwtModule.registerAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
@@ -17,7 +21,14 @@ import { CookieService } from './cookie.service'
     UsersModule,
   ],
   controllers: [AuthController],
-  providers: [AuthService, CookieService],
+  providers: [
+    AuthService,
+    CookieService,
+    UsersService,
+    JwtStrategy,
+    GoogleStrategy,
+    SessionSerializer,
+  ],
   exports: [AuthService],
 })
 export class AuthModule {}

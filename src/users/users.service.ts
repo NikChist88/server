@@ -8,23 +8,23 @@ import { CreateUserDto } from './dto/create-user.dto'
 export class UsersService {
   constructor(
     @InjectRepository(UserEntity)
-    private userRepository: Repository<UserEntity>,
+    private readonly userRepo: Repository<UserEntity>,
   ) {}
 
   async create(dto: CreateUserDto) {
-    const user = await this.userRepository.findOneBy({ email: dto.email })
-    if (user)
-      throw new HttpException(
-        'User by this email already exist!',
-        HttpStatus.UNPROCESSABLE_ENTITY,
-      )
-
-    const createdUser = this.userRepository.create(dto)
-    return await this.userRepository.save(createdUser)
+    const createdUser = this.userRepo.create(dto)
+    return await this.userRepo.save(createdUser)
   }
 
   async findByEmail(email: string) {
-    const user = await this.userRepository.findOneBy({ email })
+    const user = await this.userRepo.findOne({
+      where: { email },
+      relations: {
+        reviews: true,
+        cart: true,
+      },
+    })
+
     if (!user)
       throw new HttpException(
         'User on this email not found!',
@@ -35,25 +35,29 @@ export class UsersService {
   }
 
   async findById(id: string) {
-    const user = await this.userRepository.findOneBy({ id })
+    const user = await this.userRepo.findOne({
+      where: { id },
+      relations: {
+        reviews: true,
+        cart: true,
+      },
+    })
+
     if (!user)
       throw new HttpException(
         'User on this id not found!',
         HttpStatus.NOT_FOUND,
       )
 
-    return this.getUser(user)
+    return user
   }
 
-  getUser(user: UserEntity) {
-    return {
-      id: user.id,
-      username: user.username,
-      email: user.email,
-      token: user.token,
-      createdAt: user.createdAt,
-      updatedAt: user.updatedAt,
-      products: user.products,
-    }
+  async findAll() {
+    return await this.userRepo.find({
+      relations: {
+        reviews: true,
+        cart: true,
+      },
+    })
   }
 }

@@ -14,6 +14,6 @@ export const getPostgresConfig = (
     entities: ['dist/**/*.entity{.ts,.js}'],
     migrations: ['dist/db/migrations/*{.ts,.js}'],
     logging: false,
-    synchronize: true,
+    synchronize: false,
   };
 };

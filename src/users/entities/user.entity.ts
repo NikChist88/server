@@ -1,41 +1,50 @@
-import { ProductEntity } from 'src/products/entities/product.entity'
+import { Exclude } from 'class-transformer'
+import { CartEntity } from 'src/cart/entities/cart.entity'
+import { ReviewEntity } from 'src/reviews/entities/review.entity'
 import {
   Column,
   CreateDateColumn,
   Entity,
   OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
+  Timestamp,
   UpdateDateColumn,
 } from 'typeorm'
 
-@Entity({ database: 'euphoria_shop' })
+@Entity({ database: 'euphoria_shop', name: 'users' })
 export class UserEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string
 
+  @CreateDateColumn({ name: 'created_at' })
+  createdAt: Timestamp
+
+  @UpdateDateColumn({ name: 'updated_at' })
+  updatedAt: Timestamp
+
   @Column()
-  username: string
+  username?: string
 
   @Column({ unique: true })
   email: string
 
   @Column()
-  password: string
+  @Exclude()
+  password?: string
 
   @Column()
-  salt: string
+  @Exclude()
+  salt?: string
 
-  @Column()
-  token: string
+  @Column({ default: '/uploads/no-user-image.png' })
+  avatar?: string
 
-  @CreateDateColumn()
-  createdAt: Date
-
-  @UpdateDateColumn()
-  updatedAt: Date
-
-  @OneToMany((type) => ProductEntity, (product) => product.user, {
+  @OneToMany(() => ReviewEntity, (review) => review.user, {
     onDelete: 'CASCADE',
   })
-  products: ProductEntity[]
+  reviews: ReviewEntity[]
+
+  @OneToOne(() => CartEntity, (cart) => cart.user)
+  cart: CartEntity
 }

@@ -7,8 +7,5 @@ export const getJwtConfig = async (
   return {
     global: true,
     secret: configService.get('JWT_SECRET'),
-    signOptions: {
-      expiresIn: '1d',
-    },
   }
 }
