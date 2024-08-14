@@ -18,7 +18,7 @@ export class ReviewsService {
 
   async findByUserId(userId: string) {
     const reviews = await this.reviewsRepo.find({
-      where: { userId },
+      where: { id: userId },
     })
 
     if (!reviews.length)

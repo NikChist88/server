@@ -1,11 +1,13 @@
-import { CartEntity } from 'src/cart/entities/cart.entity'
 import { CategoryEntity } from 'src/categories/entities/category.entity'
+import { OrderItemEntity } from 'src/order/entities/order-item.entity'
 import { ReviewEntity } from 'src/reviews/entities/review.entity'
+import { UserEntity } from 'src/users/entities/user.entity'
 import {
   Column,
   CreateDateColumn,
   Entity,
   JoinColumn,
+  ManyToMany,
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
@@ -58,13 +60,7 @@ export class ProductEntity {
   images?: string[]
 
   @Column('int')
-  rating: number
-
-  @Column('int', { name: 'new_price' })
-  newPrice: number
-
-  @Column('int', { name: 'old_price' })
-  oldPrice: number
+  price: number
 
   @Column({ type: 'enum', enum: Sizes, default: Sizes.XS })
   sizes: Sizes
@@ -72,20 +68,19 @@ export class ProductEntity {
   @Column({ type: 'enum', enum: Colors })
   color: Colors
 
-  @Column({ name: 'cart_id' })
-  cartId: string
+  @ManyToMany(() => OrderItemEntity, (orderItem) => orderItem)
+  @JoinColumn({name: 'order_items'})
+  orderItems: OrderItemEntity[]
 
-  @Column({ name: 'category_id' })
-  categoryId: string
-
-  @ManyToOne(() => CartEntity, (cart) => cart.products)
-  @JoinColumn({ name: 'cart_id' })
-  cart: CartEntity
+  @ManyToOne(() => UserEntity, (user) => user)
+  @JoinColumn({ name: 'user_id' })
+  user: UserEntity
 
   @ManyToOne(() => CategoryEntity, (category) => category.products)
   @JoinColumn({ name: 'category_id' })
   category: CategoryEntity
 
   @OneToMany(() => ReviewEntity, (review) => review.product)
+  @JoinColumn({ name: 'review_id' })
   reviews: ReviewEntity[]
 }

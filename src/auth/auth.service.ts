@@ -50,6 +50,7 @@ export class AuthService {
 
   private async validateUser(dto: AuthDto) {
     const user = await this.userService.findByEmail(dto.email)
+    if (!user) throw new HttpException('User not found!', HttpStatus.NOT_FOUND)
 
     const pwdHash = this.getHash(dto.password, user.salt)
     if (pwdHash !== user.password) {

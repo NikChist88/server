@@ -1,19 +1,18 @@
-import { ProductEntity } from 'src/products/entities/product.entity'
 import { UserEntity } from 'src/users/entities/user.entity'
+import { OrderItemEntity } from './order-item.entity'
 import {
-  Column,
   CreateDateColumn,
   Entity,
   JoinColumn,
+  ManyToOne,
   OneToMany,
-  OneToOne,
   PrimaryGeneratedColumn,
   Timestamp,
   UpdateDateColumn,
 } from 'typeorm'
 
-@Entity({ database: 'euphoria_shop', name: 'cart' })
-export class CartEntity {
+@Entity({ database: 'euphoria_shop', name: 'orders' })
+export class OrderEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string
 
@@ -23,16 +22,11 @@ export class CartEntity {
   @UpdateDateColumn({ name: 'updated_at' })
   updatedAt: Timestamp
 
-  @Column({ name: 'user_id' })
-  userId: string
+  @OneToMany(() => OrderItemEntity, (orderItem) => orderItem.order)
+  @JoinColumn({ name: 'order_items_id' })
+  items: OrderItemEntity[]
 
-  @Column({ name: 'total_products' })
-  total: number
-
-  @OneToMany(() => ProductEntity, (products) => products.cart)
-  products: ProductEntity[]
-
-  @OneToOne(() => UserEntity, (user) => user.cart)
+  @ManyToOne(() => UserEntity, (user) => user.orders)
   @JoinColumn({ name: 'user_id' })
   user: UserEntity
 }

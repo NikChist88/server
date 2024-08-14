@@ -1,5 +1,5 @@
-import { ConfigService } from '@nestjs/config';
-import { DataSourceOptions } from 'typeorm';
+import { ConfigService } from '@nestjs/config'
+import { DataSourceOptions } from 'typeorm'
 
 export const getPostgresConfig = (
   configService: ConfigService,
@@ -15,5 +15,5 @@ export const getPostgresConfig = (
     migrations: ['dist/db/migrations/*{.ts,.js}'],
     logging: false,
     synchronize: false,
-  };
-};
+  }
+}

@@ -1,18 +1,19 @@
 import { ProductEntity } from 'src/products/entities/product.entity'
-import { UserEntity } from 'src/users/entities/user.entity'
+import { OrderEntity } from './order.entity'
 import {
   Column,
   CreateDateColumn,
   Entity,
   JoinColumn,
+  ManyToMany,
   ManyToOne,
   PrimaryGeneratedColumn,
   Timestamp,
   UpdateDateColumn,
 } from 'typeorm'
 
-@Entity({ database: 'euphoria_shop', name: 'reviews' })
-export class ReviewEntity {
+@Entity({ database: 'euphoria_shop', name: 'order_item' })
+export class OrderItemEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string
 
@@ -22,17 +23,17 @@ export class ReviewEntity {
   @UpdateDateColumn({ name: 'updated_at' })
   updatedAt: Timestamp
 
-  @Column('text')
-  text: string
+  @Column('int')
+  quantity: number
 
   @Column('int')
-  rating: number
+  price: number
 
-  @ManyToOne(() => UserEntity, (user) => user.reviews)
-  @JoinColumn({ name: 'user_id' })
-  user: UserEntity
-
-  @ManyToOne(() => ProductEntity, (product) => product.reviews)
+  @ManyToMany(() => ProductEntity, (product) => product.orderItems)
   @JoinColumn({ name: 'product_id' })
-  product: ProductEntity
+  products: ProductEntity[]
+
+  @ManyToOne(() => OrderEntity, (order) => order.items)
+  @JoinColumn({ name: 'order_id' })
+  order: OrderItemEntity
 }

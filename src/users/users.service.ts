@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common'
+import { Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { UserEntity } from './entities/user.entity'
 import { Repository } from 'typeorm'
@@ -16,47 +16,53 @@ export class UsersService {
     return await this.userRepo.save(createdUser)
   }
 
-  async findByEmail(email: string) {
-    const user = await this.userRepo.findOne({
-      where: { email },
+  async addToFavorites(prodId: string, userId: string) {
+    const user = this.findById(userId)
+    const isExists = (await user).favorites.some((prod) => prod.id === prodId)
+    await this.userRepo.find({
+      where: {
+        id: (await user).id,
+      },
       relations: {
-        reviews: true,
-        cart: true,
+        favorites: {
+          [isExists ? 'disconnect' : 'connect']: {
+            id: prodId,
+          },
+        },
       },
     })
 
-    if (!user)
-      throw new HttpException(
-        'User on this email not found!',
-        HttpStatus.NOT_FOUND,
-      )
+    return true
+  }
 
-    return user
+  async findByEmail(email: string) {
+    return await this.userRepo.findOne({
+      where: { email },
+      relations: {
+        favorites: true,
+        reviews: true,
+        orders: true,
+      },
+    })
   }
 
   async findById(id: string) {
-    const user = await this.userRepo.findOne({
+    return await this.userRepo.findOne({
       where: { id },
       relations: {
+        favorites: true,
         reviews: true,
-        cart: true,
+        orders: true,
       },
     })
-
-    if (!user)
-      throw new HttpException(
-        'User on this id not found!',
-        HttpStatus.NOT_FOUND,
-      )
-
-    return user
   }
 
   async findAll() {
     return await this.userRepo.find({
       relations: {
+        favorites: true,
         reviews: true,
-        cart: true,
+        orders: true,
       },
     })
   }

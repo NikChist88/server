@@ -3,6 +3,7 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinColumn,
   OneToMany,
   PrimaryGeneratedColumn,
   Timestamp,
@@ -16,7 +17,7 @@ export class CategoryEntity {
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Timestamp
-  
+
   @UpdateDateColumn({ name: 'updated_at' })
   updatedAt: Timestamp
 
@@ -27,5 +28,6 @@ export class CategoryEntity {
   description: string
 
   @OneToMany(() => ProductEntity, (product) => product.category)
+  @JoinColumn({ name: 'product_id' })
   products: ProductEntity[]
 }

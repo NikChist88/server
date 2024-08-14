@@ -1,12 +1,12 @@
 import { Exclude } from 'class-transformer'
-import { CartEntity } from 'src/cart/entities/cart.entity'
+import { OrderEntity } from 'src/order/entities/order.entity'
+import { ProductEntity } from 'src/products/entities/product.entity'
 import { ReviewEntity } from 'src/reviews/entities/review.entity'
 import {
   Column,
   CreateDateColumn,
   Entity,
   OneToMany,
-  OneToOne,
   PrimaryGeneratedColumn,
   Timestamp,
   UpdateDateColumn,
@@ -40,11 +40,14 @@ export class UserEntity {
   @Column({ default: '/uploads/no-user-image.png' })
   avatar?: string
 
+  @OneToMany(() => ProductEntity, (product) => product.user)
+  favorites: ProductEntity[]
+
   @OneToMany(() => ReviewEntity, (review) => review.user, {
     onDelete: 'CASCADE',
   })
   reviews: ReviewEntity[]
 
-  @OneToOne(() => CartEntity, (cart) => cart.user)
-  cart: CartEntity
+  @OneToMany(() => OrderEntity, (order) => order.user)
+  orders: OrderEntity[]
 }

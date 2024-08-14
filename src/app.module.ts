@@ -7,8 +7,8 @@ import { getPostgresConfig } from './configs'
 import { ProductsModule } from './products/products.module'
 import { CategoriesModule } from './categories/categories.module'
 import { ReviewsModule } from './reviews/reviews.module'
-import { CartModule } from './cart/cart.module'
 import { PassportModule } from '@nestjs/passport'
+import { OrderModule } from './order/order.module';
 
 @Module({
   imports: [
@@ -27,7 +27,7 @@ import { PassportModule } from '@nestjs/passport'
     ProductsModule,
     CategoriesModule,
     ReviewsModule,
-    CartModule,
+    OrderModule,
   ],
   controllers: [],
   providers: [],
